@@ -17,6 +17,7 @@ metadata:
   name: git-proj-yaron
 spec:
   description: my new project
+  workdir: src
   functions:
   - name: myjob
     kind: job
@@ -28,7 +29,7 @@ spec:
     image: mlrun/mlrun
     handler: nuclio_func:nuclio_handler
     with_repo: true
-  - url: serving.yaml
+  - url: src/serving.yaml
     name: serving
     with_repo: true
   workflows: []
