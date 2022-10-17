@@ -1,0 +1,78 @@
+# Copyright 2022 Iguazio
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+kind: serving
+metadata:
+  name: serving
+  hash: e2bd07c2e3f28bf920b10de6f2163988ef62fe6f
+  project: git-proj-yaron
+  categories: []
+spec:
+  command: ''
+  args: []
+  image: mlrun/mlrun
+  build:
+    commands: []
+  description: ''
+  disable_auto_mount: false
+  env: []
+  resources:
+    requests:
+      memory: 1Mi
+      cpu: 25m
+    limits:
+      memory: 20Gi
+      cpu: '2'
+  priority_class_name: igz-workload-medium
+  preemption_mode: prevent
+  min_replicas: 1
+  max_replicas: 4
+  source: ''
+  function_kind: serving_v2
+  graph:
+    steps:
+      double:
+        kind: task
+        handler: mylib.double
+      add3:
+        kind: task
+        handler: mylib.add3
+        after:
+        - double
+      echo:
+        kind: task
+        handler: mylib.echo
+        after:
+        - add3
+        responder: true
+  secret_sources: []
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: app.iguazio.com/lifecycle
+            operator: NotIn
+            values:
+            - preemptible
+          - key: eks.amazonaws.com/capacityType
+            operator: NotIn
+            values:
+            - SPOT
+          - key: node-lifecycle
+            operator: NotIn
+            values:
+            - spot
+  tolerations: null
+verbose: false
